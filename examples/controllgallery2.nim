@@ -56,7 +56,7 @@ proc main*() =
   #inner.add newTimePicker()
   #inner.add newDateTimePicker()
   #inner.add newFontButton()
-  #inner.add newColorButton()
+  inner.add newColorButton(0xFF0000)
   var inner2 = newVerticalBox()
   inner2.padded = true
   hbox.add inner2

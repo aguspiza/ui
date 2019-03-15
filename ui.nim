@@ -87,6 +87,38 @@ proc newRadioButtons*(onclick: proc() = nil): RadioButtons =
   result.impl.radioButtonsOnSelected(wrapOnRadioButtonClick, cast[pointer](result))
   result.onRadioButtonClick = onclick
 
+# ------------------------ ColorButton ----------------------------
+
+type
+  ColorButton* = ref object of Widget
+    impl*: ptr rawui.ColorButton
+    onColorButtonChanged*: proc() {.closure.}
+  Color = object
+    r: float64
+    g: float64
+    b: float64
+    alpha: float64
+
+voidCallback(wrapOnColorButtonChanged, ColorButton, ColorButton, onColorButtonChanged)
+
+#alpha is reversed for convience
+proc uintToColor*(argb: uint) : Color = 
+  return Color(r: int(argb shr 16 and 0xFF) / 255, g: int(argb shr 8 and 0xFF) / 255, b: int(argb and 0xFF) / 255, alpha: int(argb shr 24 xor 0xFF and 0xFF) / 255)
+
+proc setColor(colButton: ColorButton, color: Color) =
+  colorButtonSetColor(colButton.impl, color.r, color.g, color.b, color.alpha)
+
+proc newColorButton*(color: Color; onclick: proc() = nil): ColorButton =
+  newFinal(result)
+  result.impl = rawui.newColorButton()
+  result.setColor(color);
+  result.impl.colorButtonOnChanged(wrapOnColorButtonChanged, cast[pointer](result))
+  result.onColorButtonChanged = onclick
+
+proc newColorButton*(argb: uint = 0xFF0000; onclick: proc() = nil): ColorButton =
+  return newColorButton(uintToColor(argb), onclick)
+
+
 # ----------------- Window -------------------------------------------
 
 type
